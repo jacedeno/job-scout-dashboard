@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Scout — 2026-05-19</title>
+<style>
+:root {
+  --bg: #0e1116;
+  --panel: #161b22;
+  --panel-2: #1c232d;
+  --border: #2a313c;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --accent-2: #a371f7;
+  --high: #3fb950;
+  --medium: #d29922;
+  --low: #8b949e;
+  --chip: #1f6feb1f;
+  --chip-border: #1f6feb55;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+header { margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+header h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; }
+header .sub { color: var(--muted); font-size: 14px; }
+header .sub b { color: var(--text); }
+h2 { font-size: 20px; margin: 40px 0 16px; font-weight: 600; }
+h3 { font-size: 16px; margin: 0; font-weight: 600; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.stat-card h3 { margin-bottom: 14px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 500; }
+
+.bar-row { display: grid; grid-template-columns: 110px 1fr 40px; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-row .label { font-size: 13px; color: var(--text); text-align: right; }
+.bar-row .bar-bg { background: var(--panel-2); height: 8px; border-radius: 4px; overflow: hidden; }
+.bar-row .bar-fg { background: linear-gradient(90deg, var(--accent), var(--accent-2)); height: 100%; border-radius: 4px; }
+.bar-row .count { font-size: 12px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+.tier-row { display: flex; gap: 12px; margin-top: 8px; }
+.tier-pill { flex: 1; background: var(--panel-2); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid var(--border); }
+.tier-pill .num { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tier-pill .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-top: 2px; }
+.tier-pill.high .num { color: var(--high); }
+.tier-pill.medium .num { color: var(--medium); }
+.tier-pill.low .num { color: var(--low); }
+
+.analysis { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-top: 32px; }
+.analysis h2 { margin-top: 0; }
+.analysis p { margin: 0 0 10px; }
+.analysis .key { color: var(--accent); font-weight: 500; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
+.job { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative; display: flex; flex-direction: column; }
+.job .rank { position: absolute; top: -10px; left: -10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight: 700; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.job h3 { line-height: 1.3; margin-bottom: 4px; padding-right: 60px; }
+.job .company { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+.job .score { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.job .score .num { font-size: 24px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; min-width: 36px; }
+.job .score .meter-bg { flex: 1; background: var(--panel-2); height: 6px; border-radius: 3px; overflow: hidden; }
+.job .score .meter-fg { background: linear-gradient(90deg, var(--accent), var(--accent-2)); height: 100%; }
+.job .score-tier { font-size: 11px; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; }
+.job .score-tier.high { background: #3fb95022; color: var(--high); }
+.job .score-tier.medium { background: #d2992222; color: var(--medium); }
+.job .score-tier.low { background: #8b949e22; color: var(--low); }
+
+.meta { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.meta span { white-space: nowrap; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chip { background: var(--chip); border: 1px solid var(--chip-border); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+.snippet { color: var(--muted); font-size: 13px; margin: 0 0 14px; flex-grow: 1; }
+
+.apply-btn { display: inline-block; padding: 8px 14px; background: var(--accent); color: #0e1116 !important; border-radius: 6px; font-weight: 600; font-size: 13px; text-align: center; transition: opacity 0.15s; }
+.apply-btn:hover { opacity: 0.85; text-decoration: none; }
+
+footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); }
+@media (max-width: 540px) { .wrap { padding: 16px; } header h1 { font-size: 22px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Job Scout Dashboard</h1>
+  <p class="sub">
+    <b>2026-05-19</b> · <b>369</b> remote matches scored ·
+    sources scanned: <b>remoteok</b> 99 · <b>weworkremotely</b> 177 · <b>hn_hiring</b> 214 · <b>greenhouse</b> 3253 · <b>lever</b> 227
+  </p>
+</header>
+
+<h2>Overview</h2>
+<div class="stats-grid">
+
+  <div class="stat-card">
+    <h3>Match tiers</h3>
+    <div class="tier-row">
+      <div class="tier-pill high"><div class="num">122</div><div class="lbl">High (≥5)</div></div>
+      <div class="tier-pill medium"><div class="num">163</div><div class="lbl">Medium (3–4)</div></div>
+      <div class="tier-pill low"><div class="num">84</div><div class="lbl">Low (2)</div></div>
+    </div>
+    <p style="margin: 16px 0 0; font-size: 12px; color: var(--muted);">
+      Average score (all): <b style="color: var(--text)">4.0</b> · Top 10 average: <b style="color: var(--text)">9.1</b>
+    </p>
+  </div>
+
+  <div class="stat-card">
+    <h3>Matches by source</h3>
+    <div class="bar-row"><div class="label">Greenhouse</div><div class="bar-bg"><div class="bar-fg" style="width:100.0%"></div></div><div class="count">247</div></div>
+<div class="bar-row"><div class="label">WeWorkRemotely</div><div class="bar-bg"><div class="bar-fg" style="width:24.3%"></div></div><div class="count">60</div></div>
+<div class="bar-row"><div class="label">HN Who-is-hiring</div><div class="bar-bg"><div class="bar-fg" style="width:20.2%"></div></div><div class="count">50</div></div>
+<div class="bar-row"><div class="label">RemoteOK</div><div class="bar-bg"><div class="bar-fg" style="width:4.9%"></div></div><div class="count">12</div></div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Top 15 matched keywords (all matches)</h3>
+    <div class="bar-row"><div class="label">rag</div><div class="bar-bg"><div class="bar-fg" style="width:100.0%"></div></div><div class="count">256</div></div>
+<div class="bar-row"><div class="label">python</div><div class="bar-bg"><div class="bar-fg" style="width:84.8%"></div></div><div class="count">217</div></div>
+<div class="bar-row"><div class="label">kubernetes</div><div class="bar-bg"><div class="bar-fg" style="width:41.4%"></div></div><div class="count">106</div></div>
+<div class="bar-row"><div class="label">machine learning</div><div class="bar-bg"><div class="bar-fg" style="width:34.4%"></div></div><div class="count">88</div></div>
+<div class="bar-row"><div class="label">llm</div><div class="bar-bg"><div class="bar-fg" style="width:34.0%"></div></div><div class="count">87</div></div>
+<div class="bar-row"><div class="label">react</div><div class="bar-bg"><div class="bar-fg" style="width:26.2%"></div></div><div class="count">67</div></div>
+<div class="bar-row"><div class="label">remote-first</div><div class="bar-bg"><div class="bar-fg" style="width:24.6%"></div></div><div class="count">63</div></div>
+<div class="bar-row"><div class="label">docker</div><div class="bar-bg"><div class="bar-fg" style="width:24.2%"></div></div><div class="count">62</div></div>
+<div class="bar-row"><div class="label">full-stack</div><div class="bar-bg"><div class="bar-fg" style="width:21.1%"></div></div><div class="count">54</div></div>
+<div class="bar-row"><div class="label">postgres</div><div class="bar-bg"><div class="bar-fg" style="width:19.9%"></div></div><div class="count">51</div></div>
+<div class="bar-row"><div class="label">typescript</div><div class="bar-bg"><div class="bar-fg" style="width:18.8%"></div></div><div class="count">48</div></div>
+<div class="bar-row"><div class="label">data engineer</div><div class="bar-bg"><div class="bar-fg" style="width:18.8%"></div></div><div class="count">48</div></div>
+<div class="bar-row"><div class="label">full stack</div><div class="bar-bg"><div class="bar-fg" style="width:13.3%"></div></div><div class="count">34</div></div>
+<div class="bar-row"><div class="label">postgresql</div><div class="bar-bg"><div class="bar-fg" style="width:12.9%"></div></div><div class="count">33</div></div>
+<div class="bar-row"><div class="label">anthropic</div><div class="bar-bg"><div class="bar-fg" style="width:11.3%"></div></div><div class="count">29</div></div>
+  </div>
+
+</div>
+
+<div class="analysis">
+  <h2 style="font-size:18px;">Why these top 10 are a good fit</h2>
+  <p>
+    Of 369 remote matches scored today, the top 10 average a score of
+    <span class="key">9.1</span> — well above the all-match average of <span class="key">4.0</span>.
+  </p>
+  <p>
+    The dominant source for your top 10 is <span class="key">RemoteOK</span>
+    (3 of 10).
+    The skills driving these matches most strongly: <span class="key">rag</span> (8), <span class="key">react</span> (7), <span class="key">postgres</span> (7), <span class="key">postgresql</span> (7), <span class="key">docker</span> (6).
+  </p>
+  <p>
+    These align with your master profile in <code>profile/master.md</code>:
+    Python · IIoT · Kubernetes/K3s · full-stack · AI/ML tooling.
+    Cards below are ranked by total keyword hits (must-have + boost) — open postings directly via the button on each card.
+  </p>
+</div>
+
+<h2>Top 10 best-fit jobs</h2>
+<div class="cards">
+
+    <article class="job">
+      <div class="rank">#1</div>
+      <h3><a href="https://remoteOK.com/remote-jobs/remote-senior-ai-system-software-developer-wealthsimple-technologies-1131572" target="_blank" rel="noopener">Senior AI System Software Developer</a></h3>
+      <div class="company">Wealthsimple Technologies</div>
+      <div class="score">
+        <div class="num">11</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:100%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Remote</span><span>🔗 RemoteOK</span><span>📅 2026-05-13</span></div>
+      <div class="chips"><span class="chip">full stack</span><span class="chip">full-stack</span><span class="chip">kubernetes</span><span class="chip">docker</span><span class="chip">react</span><span class="chip">postgres</span><span class="chip">postgresql</span><span class="chip">rag</span><span class="chip">llm</span><span class="chip">anthropic</span><span class="chip">openai</span></div>
+      <p class="snippet">Build something people love Wealthsimple&#x27;s mission is to help everyone achieve financial freedom â by making financial services simple, transparent, and low-cost. We&#x27;re Canada&#x27;s largest fintech, trusted by over 3 million clients with more than $100 billion in assets. We move f…</p>
+      <a class="apply-btn" href="https://remoteOK.com/remote-jobs/remote-senior-ai-system-software-developer-wealthsimple-technologies-1131572" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#2</div>
+      <h3><a href="https://news.ycombinator.com/item?id=47979929" target="_blank" rel="noopener">REMOTE (US/CA) w/ Quarterly Travel</a></h3>
+      <div class="company">Olli Health</div>
+      <div class="score">
+        <div class="num">10</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:100%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Full-Time</span><span>🔗 HN Who-is-hiring</span><span>📅 2026-05-01</span></div>
+      <div class="chips"><span class="chip">ai engineer</span><span class="chip">full stack</span><span class="chip">python</span><span class="chip">fastapi</span><span class="chip">flask</span><span class="chip">react</span><span class="chip">typescript</span><span class="chip">postgres</span><span class="chip">postgresql</span><span class="chip">llm</span></div>
+      <p class="snippet">Olli Health | REMOTE (US/CA) w/ Quarterly Travel | Full-Time | ollihealth.ai Hi HN - Several of our critical founding hires came through this forum, and we’re hiring again for 4 additional roles. Olli Health Built by home health experts and seasoned product managers and engineer…</p>
+      <a class="apply-btn" href="https://news.ycombinator.com/item?id=47979929" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#3</div>
+      <h3><a href="https://remoteOK.com/remote-jobs/remote-tech-lead-zensurance-1131509" target="_blank" rel="noopener">Tech Lead</a></h3>
+      <div class="company">Zensurance</div>
+      <div class="score">
+        <div class="num">9</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:90%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Toronto, ON</span><span>🔗 RemoteOK</span><span>📅 2026-05-08</span></div>
+      <div class="chips"><span class="chip">full-stack</span><span class="chip">kubernetes</span><span class="chip">docker</span><span class="chip">react</span><span class="chip">typescript</span><span class="chip">postgres</span><span class="chip">postgresql</span><span class="chip">rag</span><span class="chip">remote-first</span></div>
+      <p class="snippet">About Us: Zensurance is redefining commercial insurance for Canadian businesses. As a leading InsurTech, we make getting the right coverage simple, fast, and accessible through a digital-first experience. Our platform combines advanced technology with deep industry expertise to…</p>
+      <a class="apply-btn" href="https://remoteOK.com/remote-jobs/remote-tech-lead-zensurance-1131509" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#4</div>
+      <h3><a href="https://weworkremotely.com/remote-jobs/close-senior-software-engineer-backend-python-usa-only-100-remote-1" target="_blank" rel="noopener">Senior Software Engineer - Backend/Python - USA Only (100% Remote)</a></h3>
+      <div class="company">Close</div>
+      <div class="score">
+        <div class="num">9</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:90%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Anywhere in the World</span><span>🔗 WeWorkRemotely</span><span>📅 Wed, 23 Ju</span></div>
+      <div class="chips"><span class="chip">python</span><span class="chip">flask</span><span class="chip">kubernetes</span><span class="chip">docker</span><span class="chip">postgres</span><span class="chip">postgresql</span><span class="chip">rag</span><span class="chip">llm</span><span class="chip">openai</span></div>
+      <p class="snippet">Headquarters: USA URL: http://www.close.com About Us Close is a bootstrapped, profitable, 100% remote, ~100 person team of thoughtful individuals who prioritize taking ownership and making a meaningful impact. We’re eager to make a product our customers fall in love with over an…</p>
+      <a class="apply-btn" href="https://weworkremotely.com/remote-jobs/close-senior-software-engineer-backend-python-usa-only-100-remote-1" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#5</div>
+      <h3><a href="https://weworkremotely.com/remote-jobs/wing-assistant-full-stack-developer" target="_blank" rel="noopener">Full-Stack Developer</a></h3>
+      <div class="company">Wing Assistant</div>
+      <div class="score">
+        <div class="num">9</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:90%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Anywhere in the World</span><span>🔗 WeWorkRemotely</span><span>📅 Wed, 29 Ap</span></div>
+      <div class="chips"><span class="chip">full-stack</span><span class="chip">docker</span><span class="chip">vue</span><span class="chip">react</span><span class="chip">typescript</span><span class="chip">postgres</span><span class="chip">postgresql</span><span class="chip">rag</span><span class="chip">remote-first</span></div>
+      <p class="snippet">Headquarters: Baguio City, Philippines About the Role We are looking for a Full-Stack Developer who can build scalable, high-performance web applications. You will work across the entire stack—frontend, backend, databases, APIs, and deployment—while collaborating closely with pr…</p>
+      <a class="apply-btn" href="https://weworkremotely.com/remote-jobs/wing-assistant-full-stack-developer" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#6</div>
+      <h3><a href="https://job-boards.greenhouse.io/twilio/jobs/7702644" target="_blank" rel="noopener">Machine Learning Engineer</a></h3>
+      <div class="company">twilio</div>
+      <div class="score">
+        <div class="num">9</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:90%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Remote - US</span><span>🔗 Greenhouse:twilio</span><span>📅 2026-04-30</span></div>
+      <div class="chips"><span class="chip">machine learning</span><span class="chip">mlops</span><span class="chip">python</span><span class="chip">kubernetes</span><span class="chip">docker</span><span class="chip">rag</span><span class="chip">llm</span><span class="chip">langchain</span><span class="chip">remote-first</span></div>
+      <p class="snippet">&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;&lt;strong&gt;Who we are&amp;nbsp;&lt;/strong&gt;&lt;/p&gt; &lt;p&gt;At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to&lt;a class=&quot;c-link&quot; href=&quot;https://customers.twilio.com/&quot; target=&quot;_blank&quot; data-stringif…</p>
+      <a class="apply-btn" href="https://job-boards.greenhouse.io/twilio/jobs/7702644" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#7</div>
+      <h3><a href="https://job-boards.greenhouse.io/twilio/jobs/7767260" target="_blank" rel="noopener">Software Engineer (L3) Infrastructure</a></h3>
+      <div class="company">twilio</div>
+      <div class="score">
+        <div class="num">9</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:90%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Remote - Canada</span><span>🔗 Greenhouse:twilio</span><span>📅 2026-05-18</span></div>
+      <div class="chips"><span class="chip">python</span><span class="chip">kubernetes</span><span class="chip">prometheus</span><span class="chip">grafana</span><span class="chip">vue</span><span class="chip">react</span><span class="chip">typescript</span><span class="chip">rag</span><span class="chip">remote-first</span></div>
+      <p class="snippet">&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;&lt;strong&gt;Who we are&amp;nbsp;&lt;/strong&gt;&lt;/p&gt; &lt;p&gt;At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to&lt;a class=&quot;c-link&quot; href=&quot;https://customers.twilio.com/&quot; target=&quot;_blank&quot; data-stringif…</p>
+      <a class="apply-btn" href="https://job-boards.greenhouse.io/twilio/jobs/7767260" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#8</div>
+      <h3><a href="https://job-boards.greenhouse.io/twilio/jobs/7716279" target="_blank" rel="noopener">Staff Software Engineer (L4)</a></h3>
+      <div class="company">twilio</div>
+      <div class="score">
+        <div class="num">9</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:90%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Remote - Colombia</span><span>🔗 Greenhouse:twilio</span><span>📅 2026-05-18</span></div>
+      <div class="chips"><span class="chip">ai engineer</span><span class="chip">data engineer</span><span class="chip">full-stack</span><span class="chip">react</span><span class="chip">typescript</span><span class="chip">rag</span><span class="chip">llm</span><span class="chip">langchain</span><span class="chip">remote-first</span></div>
+      <p class="snippet">&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;&lt;strong&gt;Who we are&amp;nbsp;&lt;/strong&gt;&lt;/p&gt; &lt;p&gt;At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to&lt;a class=&quot;c-link&quot; href=&quot;https://customers.twilio.com/&quot; target=&quot;_blank&quot; data-stringif…</p>
+      <a class="apply-btn" href="https://job-boards.greenhouse.io/twilio/jobs/7716279" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#9</div>
+      <h3><a href="https://remoteOK.com/remote-jobs/remote-senior-database-reliability-engineer-cloudlinux-1131613" target="_blank" rel="noopener">Senior Database Reliability Engineer</a></h3>
+      <div class="company">Cloudlinux</div>
+      <div class="score">
+        <div class="num">8</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:80%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Remote</span><span>🔗 RemoteOK</span><span>📅 2026-05-16</span></div>
+      <div class="chips"><span class="chip">reliability engineer</span><span class="chip">ai engineer</span><span class="chip">grafana</span><span class="chip">postgres</span><span class="chip">postgresql</span><span class="chip">rag</span><span class="chip">remote-first</span><span class="chip">fully remote</span></div>
+      <p class="snippet">CloudLinux / TuxCare is a remote-first infrastructure and security company. More than 300 engineers build and operate products used by hosting providers, enterprises, and internal service teams worldwide. Our Infrastructure Department runs the platforms behind CloudLinux OS, Imu…</p>
+      <a class="apply-btn" href="https://remoteOK.com/remote-jobs/remote-senior-database-reliability-engineer-cloudlinux-1131613" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+
+    <article class="job">
+      <div class="rank">#10</div>
+      <h3><a href="https://weworkremotely.com/remote-jobs/prodevelop-full-stack-developer" target="_blank" rel="noopener">Full Stack Developer</a></h3>
+      <div class="company">Prodevelop</div>
+      <div class="score">
+        <div class="num">8</div>
+        <div class="meter-bg"><div class="meter-fg" style="width:80%"></div></div>
+        <div class="score-tier high">high</div>
+      </div>
+      <div class="meta"><span>📍 Anywhere in the World</span><span>🔗 WeWorkRemotely</span><span>📅 Wed, 29 Ap</span></div>
+      <div class="chips"><span class="chip">full stack</span><span class="chip">full-stack</span><span class="chip">mqtt</span><span class="chip">docker</span><span class="chip">vue</span><span class="chip">react</span><span class="chip">postgres</span><span class="chip">postgresql</span></div>
+      <p class="snippet">Headquarters: Valencia Develop and maintain web applications using Vue.js as a frontend framework, as well as backend technologies such as Java, Node.js or similar. Work with relational databases such as PostgreSQL, Oracle or SQL Server, writing queries, designing schemas and ma…</p>
+      <a class="apply-btn" href="https://weworkremotely.com/remote-jobs/prodevelop-full-stack-developer" target="_blank" rel="noopener">View posting →</a>
+    </article>
+    
+</div>
+
+<footer>
+  Generated by <code>tools/job-scout/dashboard.py</code> from <code>last-run.json</code>.<br>
+  Re-runs automatically each morning at 08:00 CDT alongside the markdown digest.
+</footer>
+
+</div>
+</body>
+</html>
